@@ -1,0 +1,19 @@
+# Playwright TestNG Framework Commands
+# Use these Maven commands to run tests and generate Allure reports.
+# Run from the project root: D:\Projects\java-projects\test-framework-playwright (Windows) or equivalent (macOS/Linux).
+# Ensure setup.ps1 (Windows) or setup.sh (macOS/Linux) has been run to install Maven and Allure.
+
+# Run tests for any group (e.g., navigation, form)
+mvn clean test -Dgroups=<group>
+# Example:
+mvn clean test -Dgroups=ui
+mvn clean test -Dgroups=api
+
+# Run tests using testng.xml (default: ui and elements groups, excludes regression)
+mvn clean test
+
+# Generate and serve Allure report (after running tests)
+allure serve target/allure-results
+
+# Clean project (remove target/ directory)
+mvn clean
