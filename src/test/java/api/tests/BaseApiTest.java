@@ -1,5 +1,6 @@
 package api.tests;
 
+import api.client.RestAssuredClient;
 import api.helpers.ResponseValidator;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.testng.annotations.BeforeMethod;
  */
 public class BaseApiTest {
     private static final Logger logger = LoggerFactory.getLogger(BaseApiTest.class);
+    protected RestAssuredClient client;
 
     /**
      * Performs setup before each test method.
@@ -19,6 +21,8 @@ public class BaseApiTest {
     @BeforeMethod
     public void setUp() {
         logger.info("Setting up API test for thread {}", Thread.currentThread().getName());
+        client = new RestAssuredClient();
+        logger.debug("Client initialized: {}", client);
     }
 
     /**
@@ -27,6 +31,7 @@ public class BaseApiTest {
     @AfterMethod
     public void tearDown() {
         logger.info("Tearing down API test for thread {}", Thread.currentThread().getName());
+        client = null;
     }
 
     /**

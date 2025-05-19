@@ -1,9 +1,8 @@
 package api.requests;
 
-import config.ApiConfigManager;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import api.client.RestAssuredClient;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,14 +11,14 @@ import org.slf4j.LoggerFactory;
  */
 public class UserListRequest {
     private static final Logger logger = LoggerFactory.getLogger(UserListRequest.class);
-    private static final ApiConfigManager config = ApiConfigManager.getInstance();
+    private final RestAssuredClient client;
 
     /**
      * Constructs a UserListRequest.
      */
     public UserListRequest() {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        logger.debug("UserListRequest initialized with BASE_URL: {}", config.get("api.url"));
+        this.client = new RestAssuredClient();
+        logger.debug("UserListRequest initialized with client: {}", client);
     }
 
     /**
@@ -29,11 +28,9 @@ public class UserListRequest {
      */
     public Response listUsers(int page) {
         logger.info("Sending GET request to list users for page: {}", page);
-        Response response = RestAssured.given()
-                .baseUri(config.get("api.url"))
-                .header("X-API-Key", config.get("api.key"))
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
+        RequestSpecification spec = client.createRequestSpec();
+        logger.debug("Using RequestSpecification: {}", spec);
+        Response response = spec
                 .queryParam("page", page)
                 .when()
                 .get("/users");
@@ -47,11 +44,9 @@ public class UserListRequest {
      */
     public Response listUsers() {
         logger.info("Sending GET request to list users without page parameter");
-        Response response = RestAssured.given()
-                .baseUri(config.get("api.url"))
-                .header("X-API-Key", config.get("api.key"))
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
+        RequestSpecification spec = client.createRequestSpec();
+        logger.debug("Using RequestSpecification: {}", spec);
+        Response response = spec
                 .when()
                 .get("/users");
         logger.debug("Response received: StatusCode={}, Body={}", response.getStatusCode(), response.asString());

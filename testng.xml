@@ -12,9 +12,9 @@
                 <include name="regression"/>
             </run>
         </groups>
-        <classes>
-            <class name="ui.tests.ElementsTest"/>
-        </classes>
+        <packages>
+            <package name="ui.tests.*"/>
+        </packages>
     </test>
     <test name="APITests">
         <groups>
@@ -23,5 +23,8 @@
                 <include name="regression"/>
             </run>
         </groups>
+        <packages>
+            <package name="api.tests.*"/>
+        </packages>
     </test>
 </suite>

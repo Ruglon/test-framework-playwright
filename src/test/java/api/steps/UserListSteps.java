@@ -1,9 +1,6 @@
 package api.steps;
 
-
-import api.models.responses.user.list.UserListResponse;
 import api.requests.UserListRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +11,6 @@ import org.slf4j.LoggerFactory;
 public class UserListSteps {
     private static final Logger logger = LoggerFactory.getLogger(UserListSteps.class);
     private final UserListRequest userListRequest;
-    private final ObjectMapper mapper;
 
     /**
      * Constructs a UserListSteps instance with the provided UserListRequest.
@@ -22,7 +18,6 @@ public class UserListSteps {
      */
     public UserListSteps(UserListRequest userListRequest) {
         this.userListRequest = userListRequest;
-        this.mapper = new ObjectMapper();
     }
 
     /**
@@ -42,19 +37,5 @@ public class UserListSteps {
     public Response getUserList() {
         logger.info("Retrieving user list without page parameter");
         return userListRequest.listUsers();
-    }
-
-    /**
-     * Parses the API response into a UserListResponse object.
-     * @param response The API response to parse
-     * @return Parsed UserListResponse object
-     */
-    public UserListResponse parseResponse(Response response) {
-        try {
-            return mapper.readValue(response.asString(), UserListResponse.class);
-        } catch (Exception e) {
-            logger.error("Failed to parse response: {}", e.getMessage());
-            throw new RuntimeException("Failed to parse response", e);
-        }
     }
 }
