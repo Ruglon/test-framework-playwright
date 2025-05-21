@@ -22,6 +22,7 @@
         <jackson.version>2.18.0</jackson.version>
         <json-schema-validator.version>1.5.2</json-schema-validator.version>
         <lombok.version>1.18.34</lombok.version>
+        <commons-lang3.version>3.17.0</commons-lang3.version>
     </properties>
 
     <dependencies>
@@ -91,6 +92,32 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectj.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Commons Lang -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Groovy dependencies for Rest Assured -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>4.0.22</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-json</artifactId>
+            <version>4.0.22</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-xml</artifactId>
+            <version>4.0.22</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
