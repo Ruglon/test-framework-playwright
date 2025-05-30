@@ -150,7 +150,7 @@
                         <allure.results.directory>target/allure-results</allure.results.directory>
                     </systemPropertyVariables>
                     <parallel>methods</parallel>
-                    <threadCount>3</threadCount>
+                    <threadCount>6</threadCount>
                     <perCoreThreadCount>false</perCoreThreadCount>
                     <argLine>-javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar</argLine>
                 </configuration>

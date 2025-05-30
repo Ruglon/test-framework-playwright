@@ -14,7 +14,7 @@ public class ElementsPage extends BasePage {
     private static final String DYNAMIC_PROPERTIES_BTN = "xpath=//div[@class='element-group']//span[text()='Dynamic Properties']//parent::li";
 
     // Text box
-    private static final String FULL_NAME_INPUT = "#userNames";
+    private static final String FULL_NAME_INPUT = "#userName";
     private static final String EMAIL_INPUT = "#userEmail";
     private static final String CURRENT_ADDRESS_INPUT = "#currentAddress";
     private static final String PERMANENT_ADDRESS_INPUT = "#permanentAddress";

@@ -1,7 +1,6 @@
 package ui.pages;
 
 import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.TimeoutError;
 import factory.TestContext;
 import ui.helpers.WaitHelper;
 import org.slf4j.Logger;
@@ -35,8 +34,13 @@ public abstract class BasePage {
 
     protected String getText(String selector) {
         logger.debug("Getting text from element: {} on thread {}", selector, Thread.currentThread().getName());
-        String text = waitHelper.waitForVisible(selector).textContent();
-        return text != null ? text.trim() : "";
+        Locator locator = waitHelper.waitForVisible(selector);
+        String text = locator.textContent();
+        if (text == null || text.trim().isEmpty()) {
+            text = locator.getAttribute("value");
+            return text != null ? text.trim() : "";
+        }
+        return text.trim();
     }
 
     protected boolean isVisible(String selector) {
@@ -48,6 +52,11 @@ public abstract class BasePage {
         }
     }
 
+    protected void isVisibleInteractChoice(String selector) {
+        logger.debug("Checking accessibility of element: {} on thread {}", selector, Thread.currentThread().getName());
+        waitHelper.waitForInteractiveChoice(selector);
+    }
+
     protected void waitForUrlContains(String partialUrl) {
         logger.debug("Waiting for URL to contain: {} on thread {}", partialUrl, Thread.currentThread().getName());
         waitHelper.waitForUrlContains(partialUrl);
@@ -57,4 +66,11 @@ public abstract class BasePage {
         logger.debug("Waiting for title to contain: {} on thread {}", partialTitle, Thread.currentThread().getName());
         waitHelper.waitForTitleContains(partialTitle);
     }
+
+    protected void selectOption(String selectSelector, String optionValue) {
+        logger.debug("Selecting option '{}' in dropdown: {} on thread {}", optionValue, selectSelector, Thread.currentThread().getName());
+        Locator selectLocator = waitHelper.waitForVisible(selectSelector);
+        selectLocator.selectOption(optionValue);
+    }
+
 }

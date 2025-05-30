@@ -70,4 +70,30 @@ public class WaitHelper {
             throw new RuntimeException("Title does not contain '" + partialTitle + "' after " + defaultTimeout + "ms", e);
         }
     }
+
+    public void waitForInteractiveChoice(String selector) {
+        logger.debug("Waiting for choice element to be interactive: {} on thread {}", selector, Thread.currentThread().getName());
+        try {
+            Locator clickableLocator = page.locator(selector);
+            clickableLocator.waitFor(new Locator.WaitForOptions()
+                    .setState(WaitForSelectorState.VISIBLE)
+                    .setTimeout(defaultTimeout));
+
+            // Find the associated input (radio or checkbox)
+            Locator inputLocator = clickableLocator.locator("input[type='radio'], input[type='checkbox']");
+            inputLocator.waitFor(new Locator.WaitForOptions()
+                    .setState(WaitForSelectorState.ATTACHED)
+                    .setTimeout(defaultTimeout));
+
+            // Click the clickable element
+            clickableLocator.click();
+
+            // Verify the input is selected
+            if (!inputLocator.isChecked()) {
+                throw new RuntimeException("Input not selected after click: " + selector);
+            }
+        } catch (TimeoutError e) {
+            throw new RuntimeException("Element not visible or interactable after " + defaultTimeout + "ms: " + selector, e);
+        }
+    }
 }
