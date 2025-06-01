@@ -34,4 +34,27 @@ public class ElementsSteps {
     public boolean isOnElementsPage() {
         return elementsPage.userOnElementsPage();
     }
+
+    public void checkThatNewDataCreated() {
+        elementsPage.waitForSubmitDataDisplayed();
+    }
+
+    public void assertCreatedDataIsCorrect(String name, String email, String currentAddress, String permanentAddress) {
+        String actualName = elementsPage.getCreatedElementsName();
+        if (!name.equals(actualName)) {
+            throw new AssertionError(String.format("%s expected, But was %s", name, actualName));
+        }
+        String actualEmail = elementsPage.getCreatedElementsEmail();
+        if (!email.equals(actualEmail)) {
+            throw new AssertionError(String.format("%s expected, But was %s", email, actualEmail));
+        }
+        String actualCurrentAddress = elementsPage.getCreatedElementsCurrentAddress();
+        if (!currentAddress.equals(actualCurrentAddress)) {
+            throw new AssertionError(String.format("%s expected, But was %s", currentAddress, actualCurrentAddress));
+        }
+        String actualPermanentAddress = elementsPage.getCreatedElementsPermanentAddress();
+        if (!permanentAddress.equals(actualPermanentAddress)) {
+            throw new AssertionError(String.format("%s expected, But was %s", permanentAddress, actualPermanentAddress));
+        }
+    }
 }

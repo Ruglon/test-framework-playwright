@@ -47,15 +47,19 @@ public class ElementsTest extends BaseTest {
     public void testFillTextBoxInElements(
             String browser, String fullName, String email, String currentAddress, String permanentAddress) {
         setupBrowser(browser);
+        String expectedName = "Name:" + fullName;
+        String expectedEmail = "Email:" + email;
+        String expectedCurrentAddress = "Current Address:" + currentAddress;
+        String expectedPermanentAddress = "Permananet Address:" + permanentAddress    ;
 
         ElementsSteps elementsSteps = new ElementsSteps();
         elementsSteps.goToElementsPage();
         elementsSteps.goToTextBoxScreen();
         elementsSteps.fillTextBoxForm(fullName, email, currentAddress, permanentAddress);
         elementsSteps.clickSubmitTextBox();
+        elementsSteps.checkThatNewDataCreated();
 
-        // Add assertion to verify submission
-        Assert.assertTrue(elementsSteps.isOnElementsPage(), "Should remain on Elements page after submission");
+        elementsSteps.assertCreatedDataIsCorrect(expectedName, expectedEmail, expectedCurrentAddress, expectedPermanentAddress);
     }
 
 }

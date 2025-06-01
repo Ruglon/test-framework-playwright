@@ -19,6 +19,12 @@ public class ElementsPage extends BasePage {
     private static final String CURRENT_ADDRESS_INPUT = "#currentAddress";
     private static final String PERMANENT_ADDRESS_INPUT = "#permanentAddress";
     private static final String SUBMIT_BTN = "#submit";
+    private static final String CREATED_DATA = "#output";
+    private static final String CREATED_ELEMENTS_NAME = "xpath=//div[@id='output']//p[@id='name']";
+    private static final String CREATED_ELEMENTS_EMAIL = "xpath=//div[@id='output']//p[@id='email']";
+    private static final String CREATED_ELEMENTS_CURRENT_ADDRESS = "xpath=//div[@id='output']//p[@id='currentAddress']";
+    private static final String CREATED_ELEMENTS_PERMANENT_ADDRESS = "xpath=//div[@id='output']//p[@id='permanentAddress']";
+
 
     // Check box
     private static final String PAGE_TITLE = "h3";
@@ -51,5 +57,24 @@ public class ElementsPage extends BasePage {
 
     public void clickTextBoxSubmitBtn() {
         click(SUBMIT_BTN);
+    }
+    public void waitForSubmitDataDisplayed() {
+        isVisible(CREATED_DATA);
+    }
+
+    public String getCreatedElementsName() {
+        return getText(CREATED_ELEMENTS_NAME);
+    }
+
+    public String getCreatedElementsEmail() {
+        return getText(CREATED_ELEMENTS_EMAIL);
+    }
+
+    public String getCreatedElementsCurrentAddress() {
+        return getText(CREATED_ELEMENTS_CURRENT_ADDRESS);
+    }
+
+    public String getCreatedElementsPermanentAddress() {
+        return getText(CREATED_ELEMENTS_PERMANENT_ADDRESS);
     }
 }
