@@ -29,13 +29,14 @@ public class FormsTest extends BaseTest {
     public void testFillPracticeForm(String browser, String firstName, String lastName, String email,
                                      String gender, String day, String month, String year){
         setupBrowser(browser);
+        String shorMonth = month.length() <= 3 ? month : month.substring(0, 3);
 
         FormsSteps formsSteps = new FormsSteps();
         formsSteps.goToFormsPage();
         formsSteps.checkIfPracticeFormSelected();
         formsSteps.fillTextForms(firstName, lastName, email);
         formsSteps.chooseUserGender(gender);
-        assertEquals(formsSteps.chooseDateOfBirth(day, month, year), String.format("%s%s%s", day, month, year));
+        assertEquals(formsSteps.chooseDateOfBirth(day, month, year), String.format("%s%s%s", day, shorMonth, year));
     }
 
 

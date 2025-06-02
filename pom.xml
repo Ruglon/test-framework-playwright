@@ -120,6 +120,13 @@
             <version>4.0.22</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Implementation of the JSON Schema Core Draft v4 specification built with the org.json API -->
+        <dependency>
+            <groupId>org.everit.json</groupId>
+            <artifactId>org.everit.json.schema</artifactId>
+            <version>1.5.1</version>
+        </dependency>
     </dependencies>
 
     <build>

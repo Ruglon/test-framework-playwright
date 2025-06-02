@@ -15,7 +15,7 @@ public class FormsPage extends BasePage{
     private static final String FORM_EMAIL = "#userEmail";
     private static final String FORM_GENDER_MALE = "xpath=//input[@value='Male']//parent::div";
     private static final String FORM_GENDER_FEMALE = "xpath=//input[@value='Female']//parent::div";
-    private static final String FORM_GENDER_OTHER = "xpath=///input[@value='Other']//parent::div";
+    private static final String FORM_GENDER_OTHER = "xpath=//input[@value='Other']//parent::div";
     private static final String FORM_MOBILE = "#userNumber";
     private static final String FORM_DATE_BIRTH = "#dateOfBirthInput";
     private static final String FORM_DATE_SUBJECT = "xpath=//div[@class='element-group']//span[text()='Text Box']//parent::li";
