@@ -1,0 +1,70 @@
+name: Playwright TestNG Tests with Allure Report
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Install Maven dependencies
+        run: |
+          java -version
+          mvn install -DskipTests
+
+      - name: Run Playwright tests
+        run: mvn clean test -Dgroups=api
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+          if [ -d "target/allure-results" ]; then
+            mvn allure:report
+          else
+            echo "No Allure results found, skipping report generation."
+          fi
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/site/allure-maven-plugin
+          retention-days: 30
+        continue-on-error: true
+
+      - name: Load Allure history
+        if: always()
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Publish Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: target/site/allure-maven-plugin
+          keep_files: true
+        continue-on-error: true

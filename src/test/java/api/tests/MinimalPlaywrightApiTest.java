@@ -74,7 +74,7 @@ public class MinimalPlaywrightApiTest {
                     method, response.url(), expectedStatus, response.status(), headers, response.headers(), body));
         }
 
-        // Schema validation (always required in this test)
+        // Schema validation
         try (InputStream schemaStream = getClass().getClassLoader().getResourceAsStream(schemaPath)) {
             if (schemaStream == null) {
                 throw new AssertionError("Schema file not found: " + schemaPath);
