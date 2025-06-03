@@ -32,7 +32,7 @@ jobs:
           mvn install -DskipTests
 
       - name: Run Playwright tests
-        run: mvn clean test -Dgroups=api
+        run: mvn clean test
 
       - name: Generate Allure report
         if: always()
