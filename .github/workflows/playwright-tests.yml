@@ -35,12 +35,21 @@ jobs:
       - name: Run Playwright tests
         run: mvn clean test
 
+      - name: Debug Allure Results
+        if: always()
+        run: |
+          ls -la target/allure-results || echo "Directory not found"
+          find target/allure-results -type f || echo "No files found in target/allure-results"
+
       - name: Install Allure CLI
         if: always()
         run: |
           curl -o allure-2.28.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.28.0/allure-2.28.0.zip
           unzip allure-2.28.0.zip -d allure-2.28.0
-          sudo mv allure-2.28.0/bin/allure /usr/local/bin/
+          mkdir -p /home/runner/bin
+          mv allure-2.28.0/allure-2.28.0/bin/allure /home/runner/bin/
+          chmod +x /home/runner/bin/allure
+          echo "/home/runner/bin" >> $GITHUB_PATH
           allure --version
 
       - name: Generate Allure report
