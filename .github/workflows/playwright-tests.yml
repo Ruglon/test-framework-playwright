@@ -41,36 +41,6 @@ jobs:
           ls -la target/allure-results || echo "Directory not found"
           find target/allure-results -type f || echo "No files found in target/allure-results"
 
-      - name: Install Allure CLI
-        if: always()
-        run: |
-          curl -o allure-2.28.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.28.0/allure-2.28.0.zip
-          unzip allure-2.28.0.zip -d /home/runner/allure-2.28.0
-          export PATH="$PATH:/home/runner/allure-2.28.0/allure-2.28.0/bin"
-          echo "/home/runner/allure-2.28.0/allure-2.28.0/bin" >> $GITHUB_PATH
-          export ALLURE_HOME=/home/runner/allure-2.28.0/allure-2.28.0
-          echo "ALLURE_HOME=/home/runner/allure-2.28.0/allure-2.28.0" >> $GITHUB_ENV
-          chmod +x /home/runner/allure-2.28.0/allure-2.28.0/bin/allure
-          allure --version
-
-      - name: Generate Allure report
-        if: always()
-        run: |
-          if [ -d "target/allure-results" ]; then
-            allure generate target/allure-results -o target/allure-report --clean
-          else
-            echo "No Allure results found, skipping report generation."
-          fi
-
-      - name: Upload Allure report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: target/allure-report
-          retention-days: 30
-        continue-on-error: true
-
       - name: Check if gh-pages branch exists
         if: always()
         run: |
@@ -89,12 +59,36 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@v1.6
+        if: always()
+        id: allure-report
+        with:
+          allure_results: target/allure-results
+          gh_pages: gh-pages
+          allure_report: allure-report
+          allure_history: allure-history
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report
+          retention-days: 30
+        continue-on-error: true
+
       - name: Publish Allure report to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: target/allure-report
+          publish_dir: allure-history
           keep_files: true
         continue-on-error: true
+
+      - name: Print Allure Report URL
+        if: always()
+        run: |
+          echo "Allure Report URL: https://Ruglon.github.io/test-framework-playwright/"
