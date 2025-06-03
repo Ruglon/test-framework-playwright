@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:  # Add this to enable manual triggering
+  workflow_dispatch:
 
 jobs:
   test:
@@ -35,11 +35,19 @@ jobs:
       - name: Run Playwright tests
         run: mvn clean test
 
+      - name: Install Allure CLI
+        if: always()
+        run: |
+          curl -o allure-2.28.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.28.0/allure-2.28.0.zip
+          unzip allure-2.28.0.zip -d allure-2.28.0
+          sudo mv allure-2.28.0/bin/allure /usr/local/bin/
+          allure --version
+
       - name: Generate Allure report
         if: always()
         run: |
           if [ -d "target/allure-results" ]; then
-            mvn allure:report
+            allure generate target/allure-results -o target/allure-report --clean
           else
             echo "No Allure results found, skipping report generation."
           fi
@@ -49,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: target/site/allure-maven-plugin
+          path: target/allure-report
           retention-days: 30
         continue-on-error: true
 
@@ -66,6 +74,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: target/site/allure-maven-plugin
+          publish_dir: target/allure-report
           keep_files: true
         continue-on-error: true
