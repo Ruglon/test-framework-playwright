@@ -1,7 +1,6 @@
 package single;
 
 import com.microsoft.playwright.*;
-import factory.PlaywrightFactory;
 import org.testng.annotations.*;
 
 public class SingleClass {

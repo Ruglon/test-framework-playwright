@@ -48,6 +48,6 @@ public class UserListTest extends BaseApiTest {
             userListSteps = new UserListSteps(new UserListRequest());
         }
         Response response = userListSteps.getUserList();
-        assertResponse((Response) response, 200, "schemas/get/requests/user-list-schema.json");
+        assertResponse(response, 200, "schemas/get/requests/user-list-schema.json");
     }
 }

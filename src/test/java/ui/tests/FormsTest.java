@@ -8,7 +8,6 @@ import ui.steps.FormsSteps;
 import ui.tests.setup.BaseTest;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 public class FormsTest extends BaseTest {
 
