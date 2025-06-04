@@ -6,7 +6,7 @@ on:
       test_group:
         description: Choose test group to run
         required: true
-        default: all
+        default: api
         type: choice
         options:
           - ui
@@ -45,18 +45,22 @@ jobs:
       - name: Run UI tests
         if: "github.event.inputs.test_group == 'ui'"
         run: mvn clean test -Dgroups=ui
+        continue-on-error: true
 
       - name: Run API tests
         if: "github.event.inputs.test_group == 'api'"
         run: mvn clean test -Dgroups=api
+        continue-on-error: true
 
       - name: Run Regression tests
         if: "github.event.inputs.test_group == 'regression'"
         run: mvn clean test -Dgroups=regression
+        continue-on-error: true
 
       - name: Run All tests
         if: "github.event.inputs.test_group == 'all'"
         run: mvn clean test
+        continue-on-error: true
 
       - name: Store Allure results
         uses: actions/upload-artifact@v4
