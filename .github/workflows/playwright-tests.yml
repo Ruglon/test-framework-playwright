@@ -1,11 +1,23 @@
-name: Playwright TestNG Tests with Allure Report
+name: Automated Tests with Allure Reports
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
   workflow_dispatch:
+    inputs:
+      test_group:
+        description: Choose test group to run
+        required: true
+        default: all
+        type: choice
+        options:
+          - ui
+          - api
+          - regression
+          - all
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   test:
@@ -28,79 +40,83 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Install Maven dependencies
-        run: |
-          java -version
-          mvn install -DskipTests
+        run: mvn install -DskipTests
 
-      - name: Run Playwright tests
+      - name: Run UI tests
+        if: "github.event.inputs.test_group == 'ui'"
+        run: mvn clean test -Dgroups=ui
+
+      - name: Run API tests
+        if: "github.event.inputs.test_group == 'api'"
+        run: mvn clean test -Dgroups=api
+
+      - name: Run Regression tests
+        if: "github.event.inputs.test_group == 'regression'"
+        run: mvn clean test -Dgroups=regression
+
+      - name: Run All tests
+        if: "github.event.inputs.test_group == 'all'"
         run: mvn clean test
 
-      - name: Debug Allure Results
+      - name: Store Allure results
+        uses: actions/upload-artifact@v4
         if: always()
-        run: |
-          ls -la target/allure-results || echo "Directory not found"
-          find target/allure-results -type f || echo "No files found in target/allure-results"
-
-      - name: Check if gh-pages branch exists
-        if: always()
-        run: |
-          if git ls-remote --heads origin gh-pages | grep gh-pages; then
-            echo "gh-pages branch exists"
-            echo "GH_PAGES_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "gh-pages branch does not exist"
-            echo "GH_PAGES_EXISTS=false" >> $GITHUB_ENV
-          fi
-
-      - name: Load Allure history
-        if: always() && env.GH_PAGES_EXISTS == 'true'
-        uses: actions/checkout@v4
         with:
-          ref: gh-pages
-          path: gh-pages
+          name: allure-results
+          path: target/allure-results
+          retention-days: 1
+
+  generate-report:
+    runs-on: ubuntu-latest
+    needs: test
+    name: Generate report
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Download Allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
 
       - name: Generate Allure Report
         uses: simple-elf/allure-report-action@v1.6
         if: always()
-        id: allure-report
         with:
-          allure_results: target/allure-results
-          gh_pages: gh-pages
-          allure_report: allure-report
-          allure_history: allure-history
+          allure_results: allure-results
+          allure_report: _site
+
+      - name: Store generated report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: _site
+          path: _site
+          retention-days: 1
+
+  publish-report:
+    runs-on: ubuntu-latest
+    needs: generate-report
+    name: Report publication
+    steps:
+      - name: Download generated report
+        uses: actions/download-artifact@v4
+        with:
+          name: _site
+          path: _site
 
       - name: Add .nojekyll to Disable Jekyll
         if: always()
-        run: touch allure-history/.nojekyll
+        run: touch _site/.nojekyll
 
-      - name: Debug Allure History Contents
-        if: always()
-        run: |
-          ls -la allure-history || echo "Directory not found"
-          find allure-history -type f || echo "No files found in allure-history"
-
-      - name: Upload Allure report
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: allure-report
-          path: allure-report
-          retention-days: 30
-        continue-on-error: true
+          path: _site
 
-      - name: Publish Allure report to GitHub Pages
-        if: always()
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
-          keep_files: true
-        continue-on-error: true
-
-      - name: Print Allure Report URL
-        if: always()
-        run: |
-          echo "Allure Report URL: https://Ruglon.github.io/test-framework-playwright/"
-          echo "## Allure Report" >> $GITHUB_STEP_SUMMARY
-          echo "[View Allure Report](https://Ruglon.github.io/test-framework-playwright/)" >> $GITHUB_STEP_SUMMARY
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
