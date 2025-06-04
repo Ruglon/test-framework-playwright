@@ -266,6 +266,6 @@ To run tests in IntelliJ IDEA:
 5. Open a pull request.
 
 ## Contact
-See mu [LinkedIn Page](https://www.linkedin.com/in/peter-ilimovich-a78355144/)
+See my [LinkedIn Page](https://www.linkedin.com/in/peter-ilimovich-a78355144/)
 
 **Reference**: See `commands.txt` for a quick list of Maven commands to run tests and generate reports.
