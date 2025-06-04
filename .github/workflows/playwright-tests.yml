@@ -6,7 +6,7 @@ on:
       test_group:
         description: Choose test group to run
         required: true
-        default: api
+        default: all
         type: choice
         options:
           - ui
@@ -124,3 +124,9 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Add Report URL to Job Summary
+        if: always()
+        run: |
+          echo "## Allure Report" >> $GITHUB_STEP_SUMMARY
+          echo "[View Allure Report](https://ruglon.github.io/test-framework-playwright/)" >> $GITHUB_STEP_SUMMARY
