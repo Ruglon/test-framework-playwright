@@ -1,15 +1,15 @@
 # Playwright TestNG Automation Framework
 
-A robust test automation framework for **UI and API testing** using **Playwright**, **TestNG**, and **Allure** reporting. Built with Java 17, it supports cross-browser testing (Chromium, Firefox, Safari/WebKit) with parallel execution and group-based test filtering (e.g., `ui`, `api`, `regression`). The framework tests web applications, such as the Elements page for form submission, and APIs, such as `https://reqres.in/api/users`, generating detailed Allure reports viewable via GitHub Actions.
+A robust test automation framework for **UI and API testing** using **Playwright**, **TestNG**, and **Allure** reporting. Built with Java 17, it supports cross-browser testing (Chromium, Firefox, Safari/WebKit) with parallel execution and group-based test filtering (e.g., `ui`, `api`, `regression`). The framework tests web applications, such as the Elements page for form submission, and APIs, such as `https://reqres.in/api/users`, generating detailed Allure reports viewable via GitHub Actions and hosted on GitHub Pages.
 
 ## Features
 - **Cross-Browser Testing**: Tests run on Chromium, Firefox, and Safari (mapped to WebKit).
 - **API Testing**: Supports API testing with Playwright’s APIRequestContext.
 - **Parallel Execution**: Configured with `parallel="methods"` and `thread-count="3"`.
 - **Test Groups**: Filter tests by groups (`ui`, `api`, `navigation`, `form`, `regression`).
-- **Allure Reports**: Interactive reports with test steps and metadata, hosted temporarily via Surge.sh and intended for persistent hosting on GitHub Pages.
+- **Allure Reports**: Interactive reports with test steps and metadata, hosted on GitHub Pages and accessible via GitHub Actions job summary.
 - **Cross-Platform**: Setup scripts for Windows, macOS, and Linux.
-- **Modular Design**: Page Object Model with `BaseTest`, `ElementsTest`, `ElementsSteps`, `BasePage`, and API tests like `MinimalPlaywrightApiTest`.
+- **Modular Design**: Page Object Model with `BaseTest`, `ElementsTest`, `ElementsSteps`, `BasePage`, and some One-Class tests.
 
 ## Project Structure
 ```
@@ -56,10 +56,8 @@ test-framework-playwright/
 
 ## Prerequisites
 - **Java 17**: Install from [Adoptium](https://adoptium.net/) (version 17 recommended).
-- **Node.js 18+**: Required for Surge.sh hosting in GitHub Actions (install from [nodejs.org](https://nodejs.org/)).
 - **Git**: To clone the repository.
-- **Internet**: For downloading Maven, Allure, and Surge.sh dependencies.
-- **Surge.sh Account**: Needed for temporary Allure report hosting in GitHub Actions (sign up at [surge.sh](https://surge.sh/)).
+- **Internet**: For downloading Maven dependencies.
 
 ## Setup Instructions
 
@@ -72,21 +70,21 @@ cd test-framework-playwright
 ```
 
 ### 2. Install Dependencies
-Run the setup script for your operating system to install **Maven 3.9.6**, **Allure 2.28.0**, and configure `JAVA_HOME` and `M2_HOME`:
+Run the setup script for your operating system to install **Maven 3.9.6** and configure `JAVA_HOME` and `M2_HOME`:
 
 - **Windows**:
   ```powershell
   # Allow script execution
   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
   .\setup.ps1
-  # Open a new PowerShell session to refresh PATH for 'mvn' and 'allure'
+  # Open a new PowerShell session to refresh PATH for 'mvn'
   ```
 
 - **macOS/Linux**:
   ```bash
   chmod +x setup.sh
   ./setup.sh
-  # Open a new terminal to refresh PATH for 'mvn' and 'allure'
+  # Open a new terminal to refresh PATH for 'mvn'
   ```
 
 **Note**: If `JAVA_HOME` cannot be set automatically, the script will provide instructions to set it manually (e.g., `C:\Program Files\Java\jdk-17` on Windows, `/usr/lib/jvm/java-17-openjdk` on Linux).
@@ -138,10 +136,15 @@ Use Maven commands to run TestNG tests with specific groups or the default `test
   - Runs tests defined in `testng.xml` (includes `ui` and `elements`, excludes `regression`).
 
 - **Generate Allure Report Locally**:
-  ```bash
-  allure serve target/allure-results
-  ```
-  - Generates and opens an interactive HTML report in your browser after running tests.
+  - First, ensure Allure is installed on your machine:
+    - Download Allure 2.28.0 from [GitHub Releases](https://github.com/allure-framework/allure2/releases/tag/2.28.0).
+    - Extract and add the `bin` directory to your `PATH` (e.g., `/usr/local/allure-2.28.0/bin` on Linux/macOS).
+    - Verify: `allure --version` (should show 2.28.0).
+  - Then, generate the report:
+    ```bash
+    allure serve target/allure-results
+    ```
+    - Opens an interactive HTML report in your browser after running tests.
 
 - **Clean Project**:
   ```bash
@@ -150,38 +153,28 @@ Use Maven commands to run TestNG tests with specific groups or the default `test
   - Removes the `target/` directory for a fresh build.
 
 ### 5. Run Tests via GitHub Actions
-The framework is integrated with GitHub Actions to run tests and generate Allure reports automatically. Reports are hosted temporarily on Surge.sh, with plans for persistent hosting on GitHub Pages (currently troubleshooting a 404 error).
+The framework uses GitHub Actions to run tests and generate Allure reports, which are hosted on GitHub Pages for browser access.
 
 #### Steps to Run and View Reports
-1. **Push Changes**:
-   - Commit and push your changes to the `master` branch:
-     ```bash
-     git add .
-     git commit -m "Run tests via GitHub Actions"
-     git push origin master
-     ```
-   - This triggers the `playwright-tests.yml` workflow.
+1. **Trigger the Workflow**:
+   - Go to the **Actions** tab in your repository (`Ruglon/test-framework-playwright`).
+   - Select “Automated Tests with Allure Reports” and click “Run workflow.”
+   - Choose a `test_group` (e.g., `api`, `ui`, `regression`, or `all`) and run the workflow.
+   - Alternatively, push changes to the `master` branch to trigger the workflow automatically if configured for `push` events.
 
 2. **Monitor the Workflow**:
-   - Go to the **Actions** tab in your repository (`Ruglon/test-framework-playwright`).
-   - Select the latest run of “Playwright TestNG Tests with Allure Report.”
-   - Monitor the steps to ensure tests run and the report is generated.
+   - Select the latest run of “Automated Tests with Allure Reports.”
+   - Ensure the `test`, `generate-report`, and `publish-report` jobs complete successfully.
+   - Note: The workflow is designed to continue even if some tests fail, ensuring the report is generated and published.
 
 3. **View the Allure Report**:
-   - In the run summary, look for the “Allure Report (Temporary)” section.
-   - Click the “View Temporary Allure Report” link (e.g., `https://allure-report-<run-id>.surge.sh`) to view the report in your browser.
-   - Note: The GitHub Pages URL (`https://Ruglon.github.io/test-framework-playwright/`) is currently showing a 404 error. See the troubleshooting section below for details.
+   - In the run summary at the top of the workflow run page, look for the “Allure Report” section.
+   - Click the “View Allure Report” link to open `https://ruglon.github.io/test-framework-playwright/` in your browser.
+   - Alternatively, navigate directly to `https://ruglon.github.io/test-framework-playwright/` to view the latest report.
 
 4. **Download the Report (Optional)**:
-   - If Surge.sh hosting isn’t accessible, download the `allure-report` artifact from the workflow run (under “Artifacts”) and view it locally.
-
-#### Configure Surge.sh Token
-- **Create a Surge.sh Account**:
-  - Sign up at `https://surge.sh/`.
-  - Run `surge token` locally (after installing `surge` via `npm install -g surge`) to get your token.
-- **Add Token to GitHub Secrets**:
-  - Go to **Settings** > **Secrets and variables** > **Actions**.
-  - Add a new secret named `SURGE_TOKEN` with the value from `surge token`.
+   - If GitHub Pages isn’t accessible, download the `allure-report` artifact from the workflow run (under “Artifacts”).
+   - Unzip and open `index.html` in a browser to view the report locally.
 
 ### 6. IntelliJ IDEA
 To run tests in IntelliJ IDEA:
@@ -198,9 +191,11 @@ To run tests in IntelliJ IDEA:
     - Or, `Suite`: `src/test/resources/testng.xml`.
     - Save and run.
 5. Generate Allure report:
-   ```bash
-   allure serve target/allure-results
-   ```
+   - Ensure Allure is installed (see “Run Tests Locally” above).
+   - Run:
+     ```bash
+     allure serve target/allure-results
+     ```
 
 ### Troubleshooting
 - **Maven Not Recognized**:
@@ -211,8 +206,8 @@ To run tests in IntelliJ IDEA:
       - macOS/Linux: `echo $PATH` (look for `/usr/local/apache-maven-3.9.6/bin`).
   - Re-run `setup.ps1` or `setup.sh` if needed.
 
-- **Allure Not Recognized**:
-  - Verify: `allure --version` (should show 2.28.0 when installed locally).
+- **Allure Not Recognized (Local)**:
+  - Verify: `allure --version` (should show 2.28.0).
   - Check `PATH`:
       - Windows: Look for Allure `bin` directory.
       - macOS/Linux: Look for `/usr/local/allure-2.28.0/bin`.
@@ -247,6 +242,22 @@ To run tests in IntelliJ IDEA:
   - Verify `@Feature` and `@Description` annotations in `ElementsTest.java` or `MinimalPlaywrightApiTest.java`.
   - Run with debug: `mvn clean test -Dgroups=ui -X`.
 
+- **GitHub Pages 404 Error**:
+  - The Allure report is hosted at `https://ruglon.github.io/test-framework-playwright/`. If you encounter a 404 error:
+    - **Verify Settings**:
+      - Go to **Settings** > **Pages**.
+      - Ensure the source is set to “GitHub Actions.”
+    - **Check Build Logs**:
+      - Go to the **Actions** tab and look for the `pages-build-deployment` workflow.
+      - If it failed, view the logs for errors.
+    - **Repository Visibility**:
+      - If private, ensure you have a GitHub Pro, Team, or Enterprise plan for GitHub Pages.
+      - Or make the repository public temporarily to test.
+    - **Temporary Solution**:
+      - Download the `allure-report` artifact from the workflow run and view it locally while GitHub Pages is being fixed.
+    - **Contact Support**:
+      - If the issue persists, contact GitHub Support at `https://support.github.com/contact` with your repository details and workflow logs.
+
 ## Contributing
 1. Fork the repository.
 2. Create a feature branch: `git checkout -b feature-name`.
@@ -255,6 +266,6 @@ To run tests in IntelliJ IDEA:
 5. Open a pull request.
 
 ## Contact
-For issues, open a ticket on the GitHub repository or contact the maintainer.
+See mu [LinkedIn Page](https://www.linkedin.com/in/peter-ilimovich-a78355144/)
 
 **Reference**: See `commands.txt` for a quick list of Maven commands to run tests and generate reports.
